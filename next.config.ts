@@ -1,16 +1,14 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
+
+const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
+  // The browser only ever talks to its own origin; Next forwards these paths to the backend.
+  async rewrites() {
+    return [
+      { source: '/api/auth/:path*', destination: `${API_URL}/api/auth/:path*` },
+      { source: '/api/v1/:path*', destination: `${API_URL}/api/v1/:path*` },
+    ];
   },
 };
 
