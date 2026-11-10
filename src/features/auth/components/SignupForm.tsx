@@ -11,9 +11,11 @@ import { lookupStore } from '@/lib/auth';
 type StoreState =
   | { kind: 'idle' }
   | { kind: 'checking' }
-  | { kind: 'found'; name: string }
-  | { kind: 'missing' }
-  | { kind: 'error' };
+  | { kind: 'found'; slug: string; name: string }
+  | { kind: 'missing'; slug: string }
+  | { kind: 'error'; slug: string };
+
+type StoreLookupResult = Exclude<StoreState, { kind: 'checking' }>;
 
 export function SignupForm() {
   const { signUp, status } = useAuth();
@@ -21,12 +23,18 @@ export function SignupForm() {
   const params = useSearchParams();
 
   const [store, setStore] = useState(params.get('store') ?? ''); // sharable link: /signup?store=acme-store
-  const [storeState, setStoreState] = useState<StoreState>({ kind: 'idle' });
+  const [storeLookup, setStoreLookup] = useState<StoreLookupResult>({ kind: 'idle' });
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const slug = store.trim().toLowerCase();
+  const storeState: StoreState = !slug
+    ? { kind: 'idle' }
+    : storeLookup.kind !== 'idle' && storeLookup.slug === slug
+      ? storeLookup
+      : { kind: 'checking' };
 
   useEffect(() => {
     if (status === 'authenticated') router.replace('/dashboard');
@@ -34,27 +42,22 @@ export function SignupForm() {
 
   // debounced store lookup
   useEffect(() => {
-    const slug = store.trim().toLowerCase();
-    if (!slug) {
-      setStoreState({ kind: 'idle' });
-      return;
-    }
-    setStoreState({ kind: 'checking' });
+    if (!slug) return;
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         const info = await lookupStore(slug, controller.signal);
-        setStoreState({ kind: 'found', name: info.name });
+        setStoreLookup({ kind: 'found', slug, name: info.name });
       } catch (err) {
         if (controller.signal.aborted) return;
-        setStoreState(err instanceof ApiError && err.status === 404 ? { kind: 'missing' } : { kind: 'error' });
+        setStoreLookup(err instanceof ApiError && err.status === 404 ? { kind: 'missing', slug } : { kind: 'error', slug });
       }
     }, 400);
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [store]);
+  }, [slug]);
 
   const storeHint =
     storeState.kind === 'checking' ? 'Checking...'

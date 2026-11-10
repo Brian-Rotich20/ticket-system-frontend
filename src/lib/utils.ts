@@ -3,3 +3,9 @@ export function safeNext(value: string | null | undefined, fallback = '/dashboar
   if (!value || !value.startsWith('/') || value.startsWith('//')) return fallback;
   return value;
 }
+
+export const cx = (
+  ...classes: (string | false | null | undefined)[]
+): string => {
+  return classes.filter(Boolean).join(" ");
+};
