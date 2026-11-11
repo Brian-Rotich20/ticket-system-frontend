@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { FullPageSpinner } from '@/components/ui';
+import { FullPageSpinner } from '@/components/ui/spinner';
 import { useAuth } from '@/context/auth-context';
 
 export default function Home() {

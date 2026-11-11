@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
-import { Alert, Button, Card, Field } from '@/components/ui';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Field } from '@/components/ui/field';
 import { useAuth } from '@/context/auth-context';
 import { ApiError, errorMessage } from '@/lib/api';
 import { lookupStore } from '@/lib/auth';
@@ -11,11 +14,11 @@ import { lookupStore } from '@/lib/auth';
 type StoreState =
   | { kind: 'idle' }
   | { kind: 'checking' }
-  | { kind: 'found'; slug: string; name: string }
-  | { kind: 'missing'; slug: string }
-  | { kind: 'error'; slug: string };
+  | { kind: 'found'; name: string }
+  | { kind: 'missing' }
+  | { kind: 'error' };
 
-type StoreLookupResult = Exclude<StoreState, { kind: 'checking' }>;
+type StoreLookupResult = Exclude<StoreState, { kind: 'idle' | 'checking' }>;
 
 export function SignupForm() {
   const { signUp, status } = useAuth();
@@ -23,18 +26,12 @@ export function SignupForm() {
   const params = useSearchParams();
 
   const [store, setStore] = useState(params.get('store') ?? ''); // sharable link: /signup?store=acme-store
-  const [storeLookup, setStoreLookup] = useState<StoreLookupResult>({ kind: 'idle' });
+  const [storeLookup, setStoreLookup] = useState<{ slug: string; result: StoreLookupResult } | null>(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const slug = store.trim().toLowerCase();
-  const storeState: StoreState = !slug
-    ? { kind: 'idle' }
-    : storeLookup.kind !== 'idle' && storeLookup.slug === slug
-      ? storeLookup
-      : { kind: 'checking' };
 
   useEffect(() => {
     if (status === 'authenticated') router.replace('/dashboard');
@@ -42,22 +39,33 @@ export function SignupForm() {
 
   // debounced store lookup
   useEffect(() => {
+    const slug = store.trim().toLowerCase();
     if (!slug) return;
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         const info = await lookupStore(slug, controller.signal);
-        setStoreLookup({ kind: 'found', slug, name: info.name });
+        setStoreLookup({ slug, result: { kind: 'found', name: info.name } });
       } catch (err) {
         if (controller.signal.aborted) return;
-        setStoreLookup(err instanceof ApiError && err.status === 404 ? { kind: 'missing', slug } : { kind: 'error', slug });
+        setStoreLookup({
+          slug,
+          result: err instanceof ApiError && err.status === 404 ? { kind: 'missing' } : { kind: 'error' },
+        });
       }
     }, 400);
     return () => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [slug]);
+  }, [store]);
+
+  const slug = store.trim().toLowerCase();
+  const storeState: StoreState = !slug
+    ? { kind: 'idle' }
+    : storeLookup?.slug === slug
+      ? storeLookup.result
+      : { kind: 'checking' };
 
   const storeHint =
     storeState.kind === 'checking' ? 'Checking...'
@@ -71,12 +79,11 @@ export function SignupForm() {
     setBusy(true);
     try {
       await signUp({ name: name.trim(), email: email.trim().toLowerCase(), password, tenantId: store.trim().toLowerCase() });
-      router.replace('/dashboard');
     } catch (err) {
       setError(errorMessage(err));
-    } finally {
       setBusy(false);
     }
+    // on success the effect above redirects to the dashboard
   }
 
   return (

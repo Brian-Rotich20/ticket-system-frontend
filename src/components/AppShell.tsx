@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { useAuth } from '@/context/auth-context';
+import { useAuth, useUser } from '@/context/auth-context';
 import { NAV_ITEMS } from '@/lib/nav';
-import { Button, cx } from './ui';
+import { Button } from './ui/button';
+import {cx} from '@/lib/utils';
+
 
 const ROLE_STYLE = {
   CUSTOMER: 'bg-sky-100 text-sky-700',
@@ -14,7 +16,8 @@ const ROLE_STYLE = {
 } as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user, signOut } = useAuth();
+  const user = useUser();
+  const { signOut } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   if (!user) return null;

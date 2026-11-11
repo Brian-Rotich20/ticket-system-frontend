@@ -3,7 +3,10 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, type FormEvent } from 'react';
-import { Alert, Button, Card, Field } from '@/components/ui';
+import { Alert,  } from '@/components/ui/alert';
+import { Button} from '@/components/ui/button';
+import {  Card } from '@/components/ui/card';
+import { Field } from '@/components/ui/field';
 import { useAuth } from '@/context/auth-context';
 import { errorMessage } from '@/lib/api';
 import { safeNext } from '@/lib/utils';
@@ -18,7 +21,7 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  // already signed in -> go straight to the app
+  // a returning user with a valid session goes straight in
   useEffect(() => {
     if (status === 'authenticated') router.replace(next);
   }, [status, next, router]);
@@ -29,12 +32,11 @@ export function LoginForm() {
     setBusy(true);
     try {
       await signIn(email.trim().toLowerCase(), password);
-      router.replace(next);
     } catch (err) {
       setError(errorMessage(err));
-    } finally {
       setBusy(false);
     }
+    // on success the effect above redirects
   }
 
   return (

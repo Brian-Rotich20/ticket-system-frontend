@@ -1,12 +1,13 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import { useAuth } from '@/context/auth-context';
 import type { Role } from '@/lib/types';
-import { FullPageSpinner, Card } from './ui';
+import { Card } from './ui/card';
+import { FullPageSpinner } from './ui/spinner';
 
-/** Client-side route guard. The backend enforces the real permissions; this only shapes the UI. */
+/** Client-side route guard. The backend enforces the real permissions; this shapes the UI. */
 export function RequireAuth({ roles, children }: { roles?: Role[]; children: ReactNode }) {
   const { user, status } = useAuth();
   const router = useRouter();
