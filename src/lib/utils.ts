@@ -9,3 +9,7 @@ export const cx = (
 ): string => {
   return classes.filter(Boolean).join(" ");
 };
+
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+}

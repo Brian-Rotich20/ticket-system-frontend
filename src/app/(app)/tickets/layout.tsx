@@ -1,0 +1,1 @@
+// # CUSTOMER-only guard for the whole section

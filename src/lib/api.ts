@@ -81,5 +81,9 @@ export async function api<T>(path: string, options?: RequestOptions): Promise<T>
 }
 
 export function errorMessage(err: unknown): string {
+  if (err instanceof ApiError && Array.isArray(err.details) && err.details.length > 0) {
+    const messages = err.details.map((d: { message?: string }) => d?.message).filter(Boolean);
+    if (messages.length > 0) return messages.join(' ');
+  }
   return err instanceof Error ? err.message : 'Something went wrong';
 }
