@@ -1,6 +1,7 @@
 'use client';
 
 import { Card } from '@/components/ui/card';
+import { LinkButton} from '@/components/ui/link-button';
 import { useUser } from '@/context/auth-context';
 
 const HINT = {
@@ -33,6 +34,15 @@ export default function DashboardPage() {
         </dl>
         <p className="mt-4 text-sm text-slate-600">{HINT[user.role]}</p>
       </Card>
+
+      {user.role === 'CUSTOMER' && (
+      <div className="flex flex-wrap gap-3">
+        <LinkButton href="/tickets/new">Create a ticket</LinkButton>
+        <LinkButton href="/tickets" variant="secondary">
+          My tickets
+    </LinkButton>
+  </div>
+)}
     </div>
   );
 }

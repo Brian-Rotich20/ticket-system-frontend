@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
-import { Alert, Button, Card, Field, SelectField, TextAreaField } from '@/components/ui';
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Field } from "@/components/ui/field";
+import { SelectField } from "@/components/ui/select-field";
+import { TextAreaField } from "@/components/ui/textarea-field"
 import { errorMessage } from '@/lib/api';
 import { PRIORITY_LABEL, PRIORITY_ORDER, TYPE_HINT, TYPE_LABEL, TYPE_ORDER, createTicket } from '@/lib/tickets';
 import type { Priority, TicketType } from '@/lib/types';

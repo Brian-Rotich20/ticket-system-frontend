@@ -2,16 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Alert, Button, LinkButton, Skeleton, cx } from '@/components/ui/alert';
-import {  Button, LinkButton, Skeleton, cx } from '@/components/ui/button';
-import { Alert, Button, LinkButton, Skeleton, cx } from '@/components/ui/';
-import { Alert, Button, LinkButton, Skeleton, cx } from '@/components/ui';
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { errorMessage } from '@/lib/api';
 import { STATUS_LABEL, STATUS_ORDER, TYPE_LABEL, isTicketStatus, listTickets } from '@/lib/tickets';
 import type { TicketStatus } from '@/lib/types';
 import { useQuery } from '@/lib/use-query';
-import { formatDate } from '@/lib/utils';
+import { cx, formatDate } from '@/lib/utils';
 import { PriorityBadge, StatusBadge } from './badges';
 
 const PAGE_SIZE = 10;

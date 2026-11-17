@@ -2,7 +2,11 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Alert, Button, Card, LinkButton, Skeleton } from '@/components/ui';
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { LinkButton } from "@/components/ui/link-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError, errorMessage } from '@/lib/api';
 import { getTicket } from '@/lib/tickets';
 import { useQuery } from '@/lib/use-query';
