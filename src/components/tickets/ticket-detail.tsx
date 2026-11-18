@@ -13,6 +13,8 @@ import { useQuery } from '@/lib/use-query';
 import { formatDate } from '@/lib/utils';
 import { PriorityBadge, StatusBadge, TypeBadge } from './badges';
 import { StatusProgress } from './status-progress';
+import { useState } from "react";              
+import { CommentThread } from "./comment-thread";
 
 export function TicketDetail() {
   const params = useParams<{ id: string }>();
@@ -20,6 +22,7 @@ export function TicketDetail() {
   const valid = Number.isInteger(id) && id > 0;
 
   const { data: ticket, error, loading, refetch } = useQuery((signal) => getTicket(id, signal), [id], valid);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // a ticket that does not exist and one that belongs to someone else look the same (backend returns 404)
   if (!valid || (error instanceof ApiError && error.status === 404)) {
@@ -68,9 +71,16 @@ export function TicketDetail() {
               <p className="text-sm text-slate-500">Ticket #{ticket.ticketId}</p>
               <h1 className="mt-1 text-2xl font-semibold break-words">{ticket.title}</h1>
             </div>
-            <Button variant="secondary" onClick={refetch} loading={loading}>
-              Refresh
-            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                refetch();
+                setRefreshKey((k) => k + 1);
+              }}
+              loading={loading}
+            >
+                  Refresh
+          </Button>
           </div>
 
           <Card className="space-y-4">
@@ -121,6 +131,7 @@ export function TicketDetail() {
               <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-900">{ticket.description}</p>
             </div>
           </Card>
+          <CommentThread ticketId={ticket.ticketId} closed={ticket.status === "CLOSED"} refreshKey={refreshKey} />
         </>
       ) : null}
     </div>

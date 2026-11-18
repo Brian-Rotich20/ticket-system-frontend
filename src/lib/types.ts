@@ -39,3 +39,13 @@ export interface Page<T> {
   total: number;
   totalPages: number;
 }
+
+export type TicketComment = {
+  commentId: number;
+  ticketId: number;
+  authorId: string;
+  authorName: string;
+  authorRole: Role;
+  text: string;
+  createdAt: string;
+};

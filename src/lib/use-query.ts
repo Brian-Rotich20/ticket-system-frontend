@@ -30,5 +30,9 @@ export function useQuery<T>(fetcher: (signal: AbortSignal) => Promise<T>, deps: 
   }, [...deps, enabled, version]);
 
   const refetch = useCallback(() => setVersion((v) => v + 1), []);
-  return { ...state, refetch };
+  const setData = useCallback(
+  (update: (prev: T | null) => T | null) => setState((s) => ({ ...s, data: update(s.data) })),
+  [],
+);
+  return { ...state, refetch, setData };
 }
