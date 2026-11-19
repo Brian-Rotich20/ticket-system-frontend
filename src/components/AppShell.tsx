@@ -28,9 +28,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/dashboard" className="font-semibold text-slate-900">
-            Support Desk
-          </Link>
+                <Link href="/dashboard" className="font-semibold text-slate-900">
+                  Inova Support
+                </Link>
 
           <nav className="flex flex-1 flex-wrap gap-1">
             {items.map((i) => {

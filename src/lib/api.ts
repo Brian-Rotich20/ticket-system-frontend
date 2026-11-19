@@ -37,12 +37,12 @@ interface RequestOptions {
   json?: unknown;
   headers?: Record<string, string>;
   signal?: AbortSignal;
-  /** Attach the session token (default true). Sign-in and sign-up pass false. */
   auth?: boolean;
+  formData?: FormData
 }
 
 /** Low-level call: returns the Response (so callers can read headers) and throws ApiError on non-2xx. */
-export async function request(path: string, { method = 'GET', json, headers, signal, auth = true }: RequestOptions = {}): Promise<Response> {
+export async function request(path: string, { method = 'GET', json, formData, headers, signal, auth = true }: RequestOptions = {}): Promise<Response> {
   const token = auth ? getToken() : null;
 
   let res: Response;
@@ -53,6 +53,7 @@ export async function request(path: string, { method = 'GET', json, headers, sig
       headers: {
         Accept: 'application/json',
         ...(json !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...(formData ? { 'Content-Type': 'multipart/form-data' } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },

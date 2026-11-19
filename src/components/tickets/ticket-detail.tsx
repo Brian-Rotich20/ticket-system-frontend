@@ -15,6 +15,7 @@ import { PriorityBadge, StatusBadge, TypeBadge } from './badges';
 import { StatusProgress } from './status-progress';
 import { useState } from "react";              
 import { CommentThread } from "./comment-thread";
+import { AttachmentList } from "./attachment-list";
 
 export function TicketDetail() {
   const params = useParams<{ id: string }>();
@@ -131,6 +132,7 @@ export function TicketDetail() {
               <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-900">{ticket.description}</p>
             </div>
           </Card>
+          <AttachmentList ticketId={ticket.ticketId} closed={ticket.status === "CLOSED"} refreshKey={refreshKey} />
           <CommentThread ticketId={ticket.ticketId} closed={ticket.status === "CLOSED"} refreshKey={refreshKey} />
         </>
       ) : null}

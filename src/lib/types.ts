@@ -49,3 +49,14 @@ export type TicketComment = {
   text: string;
   createdAt: string;
 };
+
+export type TicketAttachment = {
+  attachmentId: number;
+  ticketId: number;
+  fileName: string;
+  fileType: string;
+  uploadedBy: string;
+  createdAt: string;
+  /** API path of the authorised download, relative to the API base URL. */
+  url: string;
+};

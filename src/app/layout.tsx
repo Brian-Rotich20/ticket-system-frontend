@@ -4,7 +4,7 @@ import { AuthProvider } from '@/context/auth-context';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Support Desk',
+  title: 'Inova Support',
   description: 'Customer support ticketing',
 };
 
