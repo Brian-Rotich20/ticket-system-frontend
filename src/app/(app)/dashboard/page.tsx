@@ -40,9 +40,15 @@ export default function DashboardPage() {
         <LinkButton href="/tickets/new">Create a ticket</LinkButton>
         <LinkButton href="/tickets" variant="secondary">
           My tickets
-    </LinkButton>
-  </div>
-)}
+        </LinkButton>
+      </div>
+    )}
+    {/* AGENT and ADMIN */}
+    {(user.role === "AGENT" || user.role === "ADMIN") && (
+    <div className="flex flex-wrap gap-3">
+      <LinkButton href="/queue">Open the queue</LinkButton>
+    </div>
+      )}
     </div>
   );
 }

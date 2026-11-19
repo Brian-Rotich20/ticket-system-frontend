@@ -17,7 +17,13 @@ import { useState } from "react";
 import { CommentThread } from "./comment-thread";
 import { AttachmentList } from "./attachment-list";
 
-export function TicketDetail() {
+type TicketDetailProps = {
+  backHref?: string;
+  backLabel?: string;
+  viewer?: "customer" | "staff";
+};
+
+export function TicketDetail({backHref = "/tickets", backLabel = "My tickets", viewer = "customer" }: TicketDetailProps) {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const valid = Number.isInteger(id) && id > 0;
@@ -32,9 +38,9 @@ export function TicketDetail() {
         <h1 className="text-lg font-semibold">Ticket not found</h1>
         <p className="mt-2 text-sm text-slate-600">It may have been removed, or it is not one of your tickets.</p>
         <div className="mt-4 flex justify-center">
-          <LinkButton href="/tickets" variant="secondary">
-            Back to my tickets
-          </LinkButton>
+          <LinkButton href={backHref} variant="secondary">
+          Back to {backLabel.toLowerCase()}
+        </LinkButton>
         </div>
       </Card>
     );
@@ -42,9 +48,12 @@ export function TicketDetail() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Link href="/tickets" className="text-sm text-slate-500 hover:text-slate-700">
+      <Link href={backHref} className="text-sm text-slate-500 hover:text-slate-700">
+      ← {backLabel}
+    </Link>
+      {/* <Link href="/tickets" className="text-sm text-slate-500 hover:text-slate-700">
         ← My tickets
-      </Link>
+      </Link> */}
 
       {error && !ticket ? (
         <Alert>
@@ -83,7 +92,7 @@ export function TicketDetail() {
                   Refresh
           </Button>
           </div>
-
+      {viewer === "customer" ? (
           <Card className="space-y-4">
             <StatusProgress status={ticket.status} />
             <p className="text-sm text-slate-600">
@@ -96,6 +105,8 @@ export function TicketDetail() {
                     : 'Waiting for an agent to pick this up.'}
             </p>
           </Card>
+        ) : null}
+
 
           <Card className="space-y-6">
             <dl className="grid gap-4 text-sm sm:grid-cols-3">

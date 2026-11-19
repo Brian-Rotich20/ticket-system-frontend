@@ -60,3 +60,15 @@ export type TicketAttachment = {
   /** API path of the authorised download, relative to the API base URL. */
   url: string;
 };
+
+export type TicketListItem = Ticket & {
+  requesterName: string;
+  assigneeName: string | null;
+};
+
+export type StaffUser = {
+  userId: string;
+  name: string;
+  email: string;
+  role: Role;
+};
