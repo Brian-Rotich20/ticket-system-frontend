@@ -101,7 +101,7 @@ export function TicketDetail({backHref = "/tickets", backLabel = "My tickets", v
                 : ticket.status === 'RESOLVED'
                   ? 'An agent marked this ticket as resolved.'
                   : ticket.assigneeId
-                    ? 'An agent is working on your ticket.'
+                   ? `${ticket.assigneeName ?? "An agent"} is working on your ticket.`
                     : 'Waiting for an agent to pick this up.'}
             </p>
           </Card>

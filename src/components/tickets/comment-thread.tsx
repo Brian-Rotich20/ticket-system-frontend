@@ -17,13 +17,12 @@ import { CommentItem } from "./comment-item";
 
 type CommentThreadProps = {
   ticketId: number;
-  /** Closed tickets are read-only (the backend rejects new messages). */
   closed: boolean;
-  /** Bump to reload the thread (the page's Refresh button). */
   refreshKey: number;
+  viewer?: "customer" | "staff";
 };
 
-export function CommentThread({ ticketId, closed, refreshKey }: CommentThreadProps) {
+export function CommentThread({ ticketId, closed, refreshKey, viewer="customer" }: CommentThreadProps) {
   const user = useUser();
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +73,7 @@ export function CommentThread({ ticketId, closed, refreshKey }: CommentThreadPro
 
       {data && data.items.length === 0 ? (
         <p className="rounded-xl bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
-          {closed ? "There are no messages on this ticket." : "No messages yet. Write to the support team below."}
+          {closed ? "There are no messages on this ticket." :  viewer==="staff" ? "No messages yet. Write to the support team below." : "No messages yet. Write to the support team below."}
         </p>
       ) : null}
 
@@ -98,14 +97,22 @@ export function CommentThread({ ticketId, closed, refreshKey }: CommentThreadPro
       {closed ? (
         <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
           <p>This ticket is closed, so new messages cannot be added.</p>
+          {viewer === "customer" ? (
+            
           <div className="mt-3">
             <LinkButton href="/tickets/new" variant="secondary">
               Create a new ticket
             </LinkButton>
           </div>
+          ): null}
         </div>
       ) : (
-        <CommentForm ticketId={ticketId} onPosted={handlePosted} />
+        <CommentForm 
+        ticketId={ticketId} 
+        onPosted={handlePosted} 
+        label={viewer === "staff" ? "Reply to customer" : "Reply"}
+        placeholder={viewer === "staff" ? "Write a message to the customer" : undefined}
+        />
       )}
     </Card>
   );

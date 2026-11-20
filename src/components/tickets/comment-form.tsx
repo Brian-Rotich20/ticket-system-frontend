@@ -11,9 +11,11 @@ import type { TicketComment } from "@/lib/types";
 type CommentFormProps = {
   ticketId: number;
   onPosted: (comment: TicketComment) => void;
+  label?: string;
+  placeholder?: string;
 };
 
-export function CommentForm({ ticketId, onPosted }: CommentFormProps) {
+export function CommentForm({ ticketId, onPosted, label="Reply", placeholder="Write a message to the support team" }: CommentFormProps) {
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,10 +55,10 @@ export function CommentForm({ ticketId, onPosted }: CommentFormProps) {
       {error && <Alert>{error}</Alert>}
 
       <TextAreaField
-        label="Reply"
+        label={label}
         name="reply"
         rows={3}
-        placeholder="Write a message to the support team"
+        placeholder={placeholder}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={onKeyDown}

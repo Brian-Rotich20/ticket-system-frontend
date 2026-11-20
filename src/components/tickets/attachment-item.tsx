@@ -9,10 +9,10 @@ import { formatDate } from "@/lib/utils";
 
 type AttachmentItemProps = {
   attachment: TicketAttachment;
-  isOwn: boolean;
+  uploader: string;
 };
 
-export function AttachmentItem({ attachment, isOwn }: AttachmentItemProps) {
+export function AttachmentItem({ attachment, uploader }: AttachmentItemProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +39,7 @@ export function AttachmentItem({ attachment, isOwn }: AttachmentItemProps) {
           {attachment.fileName}
         </p>
         <p className="text-xs text-slate-500">
-          Added by {isOwn ? "you" : "support"} · {formatDate(attachment.createdAt)}
+          Added by {uploader} · {formatDate(attachment.createdAt)}
         </p>
         {error ? (
           <p role="alert" className="mt-1 text-xs text-red-600">

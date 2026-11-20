@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { Page, Priority, Ticket, TicketStatus, TicketType } from './types';
+import type { Page, Priority, Ticket, TicketListItem, TicketStatus, TicketType } from './types';
 
 export const STATUS_ORDER: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
 export const STATUS_LABEL: Record<TicketStatus, string> = {
@@ -56,6 +56,19 @@ export function listTickets(filters: TicketFilters, signal?: AbortSignal) {
   return api<Page<Ticket>>(`/api/v1/tickets${query ? `?${query}` : ''}`, { signal });
 }
 
-export const getTicket = (id: number, signal?: AbortSignal) => api<Ticket>(`/api/v1/tickets/${id}`, { signal });
+export const getTicket = (id: number, signal?: AbortSignal) => api<TicketListItem>(`/api/v1/tickets/${id}`, { signal });
 
 export const createTicket = (input: CreateTicketInput) => api<Ticket>('/api/v1/tickets', { method: 'POST', json: input });
+
+
+export type TicketPatch = {
+  status?: TicketStatus;
+  priority?: Priority;
+  type?: TicketType;
+  assigneeId?: string | null;
+  /** The version you last read. A mismatch is rejected with 409 VERSION_CONFLICT. */
+  version?: number;
+};
+
+export const updateTicket = (id: number, patch: TicketPatch) =>
+  api<TicketListItem>(`/api/v1/tickets/${id}`, { method: "PATCH", json: patch });

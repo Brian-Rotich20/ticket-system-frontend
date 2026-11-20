@@ -20,15 +20,24 @@ import {
 import { useQuery } from "@/lib/use-query";
 import { AttachmentItem } from "./attachment-item";
 
+
+
 type AttachmentListProps = {
   ticketId: number;
-  /** Closed tickets are read-only: files can still be downloaded but not added. */
   closed: boolean;
-  /** Bump to reload the list (the page's Refresh button). */
   refreshKey: number;
+  viewer?: "customer" | "staff";
+  requesterId?: string;
 };
 
-export function AttachmentList({ ticketId, closed, refreshKey }: AttachmentListProps) {
+
+function uploaderLabel(uploadedBy: string, meId: string, requesterId: string | undefined, viewer: "customer" | "staff") {
+  if (uploadedBy === meId) return "you";
+  if (requesterId && uploadedBy === requesterId) return "the customer";
+  return viewer === "customer" ? "support" : "a colleague";
+}
+
+export function AttachmentList({ ticketId, closed, refreshKey, viewer = 'customer', requesterId }: AttachmentListProps) {
   const user = useUser();
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -118,7 +127,7 @@ export function AttachmentList({ ticketId, closed, refreshKey }: AttachmentListP
       {data && data.length > 0 ? (
         <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl ring-1 ring-slate-200">
           {data.map((a) => (
-            <AttachmentItem key={a.attachmentId} attachment={a} isOwn={a.uploadedBy === user.id} />
+            <AttachmentItem key={a.attachmentId} attachment={a} uploader={uploaderLabel(a.uploadedBy, user.id, requesterId, viewer)} />
           ))}
         </ul>
       ) : null}
