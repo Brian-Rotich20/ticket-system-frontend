@@ -49,6 +49,13 @@ export default function DashboardPage() {
       <LinkButton href="/queue">Open the queue</LinkButton>
     </div>
       )}
+
+      {user.role === "ADMIN" && (
+  <div className="flex flex-wrap gap-3">
+    <LinkButton href="/team" variant="secondary">Team</LinkButton>
+    <LinkButton href="/audit" variant="secondary">Audit log</LinkButton>
+  </div>
+)}
     </div>
   );
 }
