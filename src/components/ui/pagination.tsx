@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 type PaginationProps = {
   page: number;
@@ -8,18 +8,17 @@ type PaginationProps = {
 
 export function Pagination({ page, totalPages, onPage }: PaginationProps) {
   if (totalPages <= 1) return null;
-
   return (
-    <div className="flex items-center justify-end gap-2">
-      <span className="mr-2 text-sm text-slate-500">
+    <nav aria-label="Pagination" className="flex items-center justify-end gap-2">
+      <span className="mr-2 text-sm text-muted">
         Page {page} of {totalPages}
       </span>
-      <Button variant="secondary" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+      <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>
         Previous
       </Button>
-      <Button variant="secondary" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
+      <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => onPage(page + 1)}>
         Next
       </Button>
-    </div>
+    </nav>
   );
 }

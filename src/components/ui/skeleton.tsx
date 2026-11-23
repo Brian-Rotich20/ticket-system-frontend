@@ -1,9 +1,5 @@
-import { cx } from "@/lib/utils";
+import { cx } from '@/lib/utils';
 
-type SkeletonProps = {
-  className?: string;
-};
-
-export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cx("animate-pulse rounded-lg bg-slate-200", className)} aria-hidden />;
+export function Skeleton({ className }: { className?: string }) {
+  return <div className={cx('animate-pulse rounded-control bg-hover', className)} aria-hidden />;
 }

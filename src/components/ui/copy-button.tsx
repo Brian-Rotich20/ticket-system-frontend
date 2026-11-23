@@ -1,14 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Button, type ButtonSize, type ButtonVariant } from '@/components/ui/button';
 
-type CopyButtonProps = {
-  value: string;
-  label?: string;
-};
+type CopyButtonProps = { value: string; label?: string; variant?: ButtonVariant; size?: ButtonSize };
 
-export function CopyButton({ value, label = "Copy" }: CopyButtonProps) {
+export function CopyButton({ value, label = 'Copy', variant = 'outline', size = 'md' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -22,8 +19,8 @@ export function CopyButton({ value, label = "Copy" }: CopyButtonProps) {
   }
 
   return (
-    <Button variant="secondary" onClick={copy}>
-      {copied ? "Copied" : label}
+    <Button variant={variant} size={size} onClick={copy} aria-live="polite">
+      {copied ? 'Copied' : label}
     </Button>
   );
 }

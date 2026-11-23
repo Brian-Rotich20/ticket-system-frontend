@@ -1,16 +1,56 @@
-
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens: the single source of truth for brand colors, surfaces, text, radii and status tones.
+ * Components only use these token classes (bg-primary, text-muted, border-line, rounded-card, ...).
+ * Changing a value here restyles the whole application.
+ */
+@theme {
+  /* brand */
+  --color-primary: #14224f;
+  --color-primary-hover: #1e3170;
+  --color-primary-soft: #e9ecf5;
+  --color-secondary: #64bb46;
+  --color-secondary-hover: #56a53b;
+  --color-secondary-soft: #eef8ea;
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #ffffff;
+
+  /* surfaces and text */
+  --color-canvas: #f8f9fc;
+  --color-surface: #ffffff;
+  --color-hover: #f2f4f7;
+  --color-ink: #172033;
+  --color-muted: #667085;
+  --color-subtle: #98a2b3;
+  --color-line: #e5e7eb;
+  --color-line-strong: #d0d5dd;
+
+  /* feedback and status tones */
+  --color-success: #2f7d1b;
+  --color-success-soft: #eef8ea;
+  --color-info: #175cd3;
+  --color-info-soft: #eff8ff;
+  --color-warning: #b54708;
+  --color-warning-soft: #fffaeb;
+  --color-danger: #d92d20;
+  --color-danger-soft: #fef3f2;
+  --color-note: #92400e;
+  --color-note-soft: #fef6e4;
+
+  /* shape */
+  --radius-control: 0.5rem;
+  --radius-card: 0.875rem;
+
+  /* typography: Inter is loaded in the root layout */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Tailwind CSS v4 theme directive; not an unknown at-rule. */
-/* stylelint-disable at-rule-no-unknown */
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+@layer base {
+  body {
+    @apply bg-canvas text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-primary text-on-primary;
+  }
 }
-/* stylelint-enable at-rule-no-unknown */

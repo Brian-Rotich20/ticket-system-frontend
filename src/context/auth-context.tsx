@@ -1,18 +1,26 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { setUnauthorizedHandler } from '@/lib/api';
-import { fetchSession, signIn as apiSignIn, signOut as apiSignOut, signUp as apiSignUp, type SignUpInput } from '@/lib/auth';
-import { clearToken, getToken } from '@/lib/token';
-import type { SessionUser } from '@/lib/types';
+import { fetchSession, registerBusiness, signIn as apiSignIn, signOut as apiSignOut, type RegisterInput } from '@/features/auth/api';
+import { isApiError, setUnauthorizedHandler } from '@/lib/api/client';
+import { clearToken, getToken, setLastOrganization, setToken, TOKEN_KEY } from '@/lib/session';
+import type { SessionUser } from '@/types/api';
 
-type Status = 'loading' | 'authenticated' | 'unauthenticated';
+/**
+ * loading: restoring the session; error: the server could not be reached (the token is kept, the user can retry,
+ * nobody is logged out because of a cold start or a flaky connection).
+ */
+type Status = 'loading' | 'authenticated' | 'unauthenticated' | 'error';
 
 interface AuthContextValue {
   user: SessionUser | null;
   status: Status;
+  retry(): void;
   signIn(email: string, password: string): Promise<void>;
-  signUp(input: SignUpInput): Promise<void>;
+  /** Registers the business; returns the new organization id. */
+  register(input: RegisterInput): Promise<string>;
+  /** Adopt a session token handed out elsewhere (invitation acceptance). */
+  adoptToken(token: string): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -30,16 +38,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     try {
       const u = await fetchSession();
-      if (!u) clearToken(); // token no longer maps to a session
+      if (!u) clearToken(); // the token no longer maps to a session
       setUser(u);
       setStatus(u ? 'authenticated' : 'unauthenticated');
       return u;
-    } catch {
-      // 401 is handled globally in api(); other failures keep the token so a reload can recover
-      setUser(null);
-      setStatus('unauthenticated');
+    } catch (err) {
+      if (isApiError(err, 401)) {
+        setUser(null);
+        setStatus('unauthenticated');
+        return null;
+      }
+      setStatus('error'); // network / timeout / server error: keep the token
       return null;
     }
+  }, []);
+
+  const localSignOut = useCallback(() => {
+    clearToken();
+    setLastOrganization(null);
+    setUser(null);
+    setStatus('unauthenticated');
   }, []);
 
   // session persistence: restore from the stored token on every page load
@@ -56,17 +74,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setUnauthorizedHandler(null);
   }, []);
 
+  // cross-tab: signing out (or in as someone else) in one tab updates the others
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== TOKEN_KEY) return;
+      if (!e.newValue) {
+        setUser(null);
+        setStatus('unauthenticated');
+      } else {
+        void loadSession();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [loadSession]);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       status,
+      retry: () => {
+        setStatus('loading');
+        void loadSession();
+      },
       async signIn(email, password) {
         await apiSignIn(email, password);
         if (!(await loadSession())) throw new Error('Could not start a session. Please try again.');
       },
-      async signUp(input) {
-        await apiSignUp(input);
-        if (!(await loadSession())) throw new Error('Could not start a session. Please try again.');
+      async register(input) {
+        const organization = await registerBusiness(input);
+        setLastOrganization(organization.id);
+        if (!(await loadSession())) throw new Error('Your business was created, but signing in failed. Please sign in.');
+        return organization.id;
+      },
+      async adoptToken(token) {
+        setToken(token);
+        if (!(await loadSession())) throw new Error('Could not start a session. Please sign in.');
       },
       async signOut() {
         try {
@@ -74,13 +117,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } catch {
           /* local sign-out must still happen */
         } finally {
-          clearToken();
-          setUser(null);
-          setStatus('unauthenticated');
+          localSignOut();
         }
       },
     }),
-    [user, status, loadSession],
+    [user, status, loadSession, localSignOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,23 +1,22 @@
-
-import type { ReactNode } from "react";
-import { cx } from "@/lib/utils";
+import type { ReactNode } from 'react';
+import { cx } from '@/lib/utils';
 
 type AlertProps = {
-  kind?: "error" | "info";
+  kind?: 'error' | 'info' | 'success' | 'warning';
   children: ReactNode;
+  className?: string;
 };
 
-export function Alert({ kind = "error", children }: AlertProps) {
+const STYLE = {
+  error: 'bg-danger-soft text-danger border-danger/20',
+  info: 'bg-info-soft text-info border-info/20',
+  success: 'bg-success-soft text-success border-success/20',
+  warning: 'bg-warning-soft text-warning border-warning/20',
+} as const;
+
+export function Alert({ kind = 'error', children, className }: AlertProps) {
   return (
-    <div
-      role={kind === "error" ? "alert" : "status"}
-      className={cx(
-        "rounded-lg px-3 py-2 text-sm",
-        kind === "error"
-          ? "bg-red-50 text-red-700 ring-1 ring-red-200"
-          : "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200"
-      )}
-    >
+    <div role={kind === 'error' ? 'alert' : 'status'} className={cx('rounded-control border px-3 py-2 text-sm', STYLE[kind], className)}>
       {children}
     </div>
   );
