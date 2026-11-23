@@ -42,8 +42,22 @@ const secretPageHeaders = [
   { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
 ];
 
+/** Hosts next/image may optimise: Unsplash, plus the host of NEXT_PUBLIC_HERO_IMAGE_URL when it is set. */
+const imageHosts = (() => {
+  const hosts = new Set(['images.unsplash.com']);
+  try {
+    if (process.env.NEXT_PUBLIC_HERO_IMAGE_URL) hosts.add(new URL(process.env.NEXT_PUBLIC_HERO_IMAGE_URL).hostname);
+  } catch {
+    /* a relative path or invalid URL needs no remote pattern */
+  }
+  return [...hosts];
+})();
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    remotePatterns: imageHosts.map((hostname) => ({ protocol: 'https' as const, hostname })),
+  },
   async headers() {
     return [
       { source: '/:path*', headers: securityHeaders },

@@ -19,6 +19,11 @@ const PATHS = {
   check: 'm5 12 5 5 9-10',
   arrowRight: 'M5 12h14M13 6l6 6-6 6',
   chevronDown: 'm6 9 6 6 6-6',
+  mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
+  phone: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2',
+  message: 'M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12',
+  pin: 'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21M12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5',
+  clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18M12 7v5l3 2',
 } as const;
 
 export type IconName = keyof typeof PATHS;
